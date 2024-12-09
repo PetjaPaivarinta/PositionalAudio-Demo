@@ -20,7 +20,8 @@ positionalAudio.setRefDistance( 1 );
 positionalAudio.setDirectionalCone( 180, 230, 0.1 );
 
 
-const helper = new PositionalAudioHelper( positionalAudio, 0.1 );
+const helper = new PositionalAudioHelper( positionalAudio, 10);
+helper.rotation.y = -250;
 positionalAudio.add( helper );
 
 const loader = new GLTFLoader();
@@ -127,9 +128,14 @@ loader.load('Assets/mountain.glb', function (gltf) {
 
 loader.load('Assets/BoomBox.glb', function (gltf) {
     const BoomBox = gltf.scene;
-    BoomBox.scale.set(60, 60, 60); // Set the scale here
-    BoomBox.position.set(37, 0.5, 2); // Set the position here
-    BoomBox.rotation.y = 124;
+    BoomBox.position.set(37, 0, 2); // Set the position here
+    BoomBox.rotation.y = 185;
+    BoomBox.traverse((child) => {
+        if (child.isMesh) {
+            child.material.map = dirtTexture;
+        }
+    }
+    );
     BoomBox.add(positionalAudio);
     scene.add(BoomBox);
 
