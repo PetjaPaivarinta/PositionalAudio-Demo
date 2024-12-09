@@ -11,11 +11,9 @@ scene.background = new THREE.Color('#00FFFF');
 const listener = new THREE.AudioListener();
 camera.add( listener );
 
-const audioElement = document.getElementById( 'music' );
-audioElement.play();
 
 const positionalAudio = new THREE.PositionalAudio( listener );
-positionalAudio.setMediaElementSource( audioElement );
+
 positionalAudio.setRefDistance( 1 );
 positionalAudio.setDirectionalCone( 180, 230, 0.1 );
 
@@ -48,7 +46,15 @@ controls.pointerSpeed = 0.5;
 
 document.addEventListener('click', () => {
     controls.lock();
+    // Start audio playback after user interaction
+    const audioElement = document.getElementById('music');
+    audioElement.play().then(() => {
+        positionalAudio.setMediaElementSource(audioElement);
+    }).catch((error) => {
+        console.error('Audio playback failed:', error);
+    });
 }, false);
+
 let moveForward = false;
 let moveBackward = false;
 let moveLeft = false;
