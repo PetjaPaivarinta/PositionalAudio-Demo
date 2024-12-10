@@ -2,24 +2,6 @@ import * as THREE from 'three';
 import { PointerLockControls } from 'three/addons/controls/PointerLockControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { PositionalAudioHelper } from 'three/addons/helpers/PositionalAudioHelper.js';
-import ParticleSystem, {
-  Body,
-  Color,
-  Emitter,
-  Gravity,
-  Life,
-  Mass,
-  Position,
-  RadialVelocity,
-  RandomDrift,
-  Rate,
-  Scale,
-  Span,
-  SphereZone,
-  SpriteRenderer,
-  Vector3D,
-  ease,
-} from 'three-nebula';
 
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
@@ -154,12 +136,6 @@ loader.load('Assets/BoomBox.glb', function (gltf) {
     const BoomBox = gltf.scene;
     BoomBox.position.set(37, 0, 2); // Set the position here
     BoomBox.rotation.y = 185;
-    BoomBox.traverse((child) => {
-        if (child.isMesh) {
-            child.material.map = dirtTexture;
-        }
-    }
-    );
     BoomBox.add(positionalAudio);
     scene.add(BoomBox);
 
@@ -170,11 +146,8 @@ loader.load('Assets/BoomBox.glb', function (gltf) {
     console.log('An error happened');
 });
 
-const light = new THREE.AmbientLight(0xffffff, 0.3);
-scene.add(light);
-
-const light2 = new THREE.DirectionalLight(0xffffff, 1);
-light2.position.set(0, 1, 1);
+const light2 = new THREE.DirectionalLight(0xffffff, 4);
+light2.position.set(-10, 1, 1);
 scene.add(light2);
 
 function animate() {
