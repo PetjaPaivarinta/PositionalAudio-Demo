@@ -2,6 +2,24 @@ import * as THREE from 'three';
 import { PointerLockControls } from 'three/addons/controls/PointerLockControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { PositionalAudioHelper } from 'three/addons/helpers/PositionalAudioHelper.js';
+import ParticleSystem, {
+  Body,
+  Color,
+  Emitter,
+  Gravity,
+  Life,
+  Mass,
+  Position,
+  RadialVelocity,
+  RandomDrift,
+  Rate,
+  Scale,
+  Span,
+  SphereZone,
+  SpriteRenderer,
+  Vector3D,
+  ease,
+} from 'three-nebula';
 
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
