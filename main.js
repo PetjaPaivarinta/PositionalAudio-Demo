@@ -10,7 +10,7 @@ const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.inner
 const listener = new THREE.AudioListener();
 camera.add( listener );
 
-const smokeParticlesCount = 200;
+const smokeParticlesCount = 400;
 // Create a geometry for the smoke particles
 const smokeGeometry = new THREE.BufferGeometry();
 const positions = new Float32Array(smokeParticlesCount * 3); // Each particle has x, y, z coordinates
@@ -28,8 +28,8 @@ for (let i = 0; i < smokeParticlesCount; i++) {
 
     // Random velocity for each particle (simulate upward motion and drift)
     velocities[i * 3] = (Math.random() - 0.05) * 0.01; // x velocity
-    velocities[i * 3 + 1] = Math.random() * 0.01 + 0.05; // y velocity (upward)
-    velocities[i * 3 + 2] = Math.random() * -0.02 + 0.03; // z velocity (drift)
+    velocities[i * 3 + 1] = Math.random() * 0.01 + 0.02; // y velocity (upward)
+    velocities[i * 3 + 2] = Math.random() * -0.03 + 0.03; // z velocity (drift)
 }
 
 // Add positions and velocities to the geometry
