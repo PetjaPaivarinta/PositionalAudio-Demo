@@ -10,7 +10,7 @@ const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.inner
 const listener = new THREE.AudioListener();
 camera.add( listener );
 
-const smokeParticlesCount = 400;
+const smokeParticlesCount = 200;
 // Create a geometry for the smoke particles
 const smokeGeometry = new THREE.BufferGeometry();
 const positions = new Float32Array(smokeParticlesCount * 3); // Each particle has x, y, z coordinates
@@ -34,7 +34,7 @@ for (let i = 0; i < smokeParticlesCount; i++) {
 
 // Add positions and velocities to the geometry
 smokeGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-smokeGeometry.setAttribute('velocity', new THREE.BufferAttribute(velocities, 3));
+smokeGeometry.setAttribute('velocity', new THREE.BufferAttribute(velocities, 2));
 
 // Create a material for the smoke particles
 const smokeMaterial = new THREE.PointsMaterial({
@@ -220,7 +220,7 @@ function animate() {
         positionsArray[i * 3 + 2] += velocitiesArray[i * 3 + 2]; // z position (drift)
 
         // Reset particles that go too high
-        if (positionsArray[i * 3 + 1] > housePosition.y + 10) {
+        if (positionsArray[i * 3 + 1] > housePosition.y + 15) {
             // Reset to spawn above the house, keeping within the small range
             positionsArray[i * 3 + 1] = housePosition.y + 3 + Math.random() * 0.5;
             positionsArray[i * 3] = housePosition.x + Math.random() * 1 - 0.5;
