@@ -6,10 +6,49 @@ import { PositionalAudioHelper } from 'three/addons/helpers/PositionalAudioHelpe
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
 
-scene.background = new THREE.Color('#00FFFF');
 
 const listener = new THREE.AudioListener();
 camera.add( listener );
+
+const smokeParticlesCount = 200;
+// Create a geometry for the smoke particles
+const smokeGeometry = new THREE.BufferGeometry();
+const positions = new Float32Array(smokeParticlesCount * 3); // Each particle has x, y, z coordinates
+const velocities = new Float32Array(smokeParticlesCount * 3); // Store velocity data for each particle
+
+// Position the smoke emitter above the house
+const housePosition = new THREE.Vector3(18, 0, 2); // Position of the BoomBox (house)
+
+// Set random positions directly above the house for the smoke particles
+for (let i = 0; i < smokeParticlesCount; i++) {
+    // Restrict x and z positions around the house, keep them close to the house
+    positions[i * 3] = housePosition.x + Math.random() * 1 - 0.5; // x position directly above the house
+    positions[i * 3 + 1] = housePosition.y + 3 + Math.random() * 0.5;  // y position (above the house)
+    positions[i * 3 + 2] = housePosition.z + Math.random() * 1 - 0.5; // z position directly above the house
+
+    // Random velocity for each particle (simulate upward motion and drift)
+    velocities[i * 3] = (Math.random() - 0.05) * 0.01; // x velocity
+    velocities[i * 3 + 1] = Math.random() * 0.01 + 0.05; // y velocity (upward)
+    velocities[i * 3 + 2] = Math.random() * -0.02 + 0.03; // z velocity (drift)
+}
+
+// Add positions and velocities to the geometry
+smokeGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+smokeGeometry.setAttribute('velocity', new THREE.BufferAttribute(velocities, 3));
+
+// Create a material for the smoke particles
+const smokeMaterial = new THREE.PointsMaterial({
+    color: '#3b393b', // Smoke color
+    size: 0.7,         // Particle size
+    opacity: 0.9,    // Particle opacity
+    transparent: true,
+    blending: THREE.AdditiveBlending
+});
+
+// Create the smoke emitter (a Points object)
+const smokeEmitter = new THREE.Points(smokeGeometry, smokeMaterial);
+smokeEmitter.position.set(housePosition.x, housePosition.y + 3, housePosition.z); // Position above the house
+scene.add(smokeEmitter);
 
 
 const positionalAudio = new THREE.PositionalAudio( listener );
@@ -102,16 +141,11 @@ const onKeyUp = (event) => {
     }
 };
 
-
-
 document.addEventListener('keydown', onKeyDown, false);
 document.addEventListener('keyup', onKeyUp, false);
 
 const velocity = new THREE.Vector3();
 const direction = new THREE.Vector3();
-
-
-
 
 camera.position.set(0, 1.6, 5);
 
@@ -146,9 +180,15 @@ loader.load('Assets/BoomBox.glb', function (gltf) {
     console.log('An error happened');
 });
 
-const light2 = new THREE.DirectionalLight(0xffffff, 4);
-light2.position.set(-10, 1, 1);
+const light = new THREE.AmbientLight(0xffffff, 1);
+scene.add(light);
+
+const light2 = new THREE.DirectionalLight(0xffffff, 1);
+light2.position.set(0, 1, 0);
 scene.add(light2);
+
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
 function animate() {
     controls.update();
@@ -169,5 +209,25 @@ function animate() {
         controls.moveForward(-velocity.z * delta);
     }
 
-    renderer.render( scene, camera );
+    // Update particle positions to simulate rising smoke
+    const positionsArray = smokeGeometry.attributes.position.array;
+    const velocitiesArray = smokeGeometry.attributes.velocity.array;
+
+    for (let i = 0; i < smokeParticlesCount; i++) {
+        // Update particle positions based on velocity
+        positionsArray[i * 3] += velocitiesArray[i * 3];     // x position
+        positionsArray[i * 3 + 1] += velocitiesArray[i * 3 + 1]; // y position (upward)
+        positionsArray[i * 3 + 2] += velocitiesArray[i * 3 + 2]; // z position (drift)
+
+        // Reset particles that go too high
+        if (positionsArray[i * 3 + 1] > housePosition.y + 10) {
+            // Reset to spawn above the house, keeping within the small range
+            positionsArray[i * 3 + 1] = housePosition.y + 3 + Math.random() * 0.5;
+            positionsArray[i * 3] = housePosition.x + Math.random() * 1 - 0.5;
+            positionsArray[i * 3 + 2] = housePosition.z + Math.random() * 1 - 0.5;
+        }
+    }
+
+    smokeGeometry.attributes.position.needsUpdate = true; // Make sure the geometry is updated
+    renderer.render(scene, camera);
 }
