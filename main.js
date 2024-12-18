@@ -59,7 +59,7 @@ positionalAudio.setDirectionalCone( 180, 230, 0.1 );
 
 const helper = new PositionalAudioHelper( positionalAudio, 10);
 helper.rotation.y = -250;
-positionalAudio.add( helper );
+// positionalAudio.add( helper ); // enable to add PositionalAudioHelper
 
 const loader = new GLTFLoader();
 
